@@ -37,7 +37,7 @@ const App = (props) => {
         </button>
       </div>
       <ul>
-        {notes.map((note) => (
+        {notesToShow.map((note) => (
           <Note key={note.id} note={note} />
         ))}
       </ul>
