@@ -1,13 +1,19 @@
 import React from "react";
 import CountryData from "./CountryData";
 
-const Country = ({ country }) => {
-  return (
-    <div>
-      {country.name}
-      <button onClick={<CountryData country={country} />}>show</button>
-    </div>
-  );
+const Country = ({ country, setCountries }) => {
+  let countryView = false;
+
+  if (!countryView) {
+    return (
+      <div>
+        {country.name}
+        <button onClick={() => setCountries([country])}>show</button>
+      </div>
+    );
+  } else {
+    return <CountryData country={country} />;
+  }
 };
 
 export default Country;

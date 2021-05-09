@@ -30,7 +30,7 @@ function App() {
           <input onChange={nameFilterChange} />
         </div>
       </form>
-      <Countries countries={filteredCountries} />
+      <Countries countries={filteredCountries} setCountries={setCountries} />
     </div>
   );
 }

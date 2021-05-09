@@ -1,8 +1,7 @@
 import React from "react";
-import Country from "./Country";
 import CountryData from "./CountryData";
 
-const Countries = ({ countries }) => {
+const Countries = ({ countries, setCountries }) => {
   if (countries.length > 10) {
     return <div>Too many matches, specify another filter</div>;
   } else if (countries.length === 1) {
@@ -14,8 +13,12 @@ const Countries = ({ countries }) => {
   } else {
     return (
       <div>
-        {countries.map((country) => (
-          <Country key={country.name} country={country} />
+        {countries.map((country, i) => (
+          <div>
+            {" "}
+            {country.name}{" "}
+            <button onClick={() => setCountries([country])}>show</button>
+          </div>
         ))}
       </div>
     );
