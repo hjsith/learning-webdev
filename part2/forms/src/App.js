@@ -7,6 +7,7 @@ const App = () => {
   const [newNote, setNewNote] = useState("");
   const [showAll, setShowAll] = useState(false);
 
+  ///Change this to services module
   useEffect(() => {
     noteService.getAll().then((initialNotes) => {
       setNotes(initialNotes);
@@ -14,6 +15,7 @@ const App = () => {
   }, []);
   console.log("render", notes.length, "notes");
 
+  ///This too
   const addNote = (event) => {
     event.preventDefault();
     const noteObject = {
