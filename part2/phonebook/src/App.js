@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Persons from "./components/Persons";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
-import axios from "axios";
+import phonebookService from "./services/people";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,12 +11,22 @@ const App = () => {
   const [nameFilter, setNameFilter] = useState("");
 
   const peopleHook = () => {
-    axios.get("http://localhost:3001/persons").then((response) => {
-      setPersons(response.data);
+    phonebookService.getAll().then((people) => {
+      setPersons(people);
     });
   };
 
   useEffect(peopleHook, []);
+
+  const deletePerson = (id) => {
+    const filteredPerson = persons.filter(person => person.id === id)
+    const personName = filteredPerson[0].name
+    const personId = filteredPerson[0].id
+    if (window.confirm(`Delete ${personName}?`)) {
+      phonebookService.deletePerson(personId)
+      setPersons(persons.filter(person => person.id !== personId))
+    }
+  }
 
   const handleFilterChange = (e) => {
     setNameFilter(e.target.value);
@@ -32,21 +42,33 @@ const App = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    const personObject = {
-      name: newName,
-      number: newNumber,
-    };
-
     if (persons.map((person) => person.name).includes(newName)) {
-      window.alert(`${newName} is already added to phonebook`);
+
+      const person = persons.filter((person) =>
+        person.name === newName
+      )
+      const personToAdd = person[0]
+      const updatedPerson = { ...personToAdd, number: newNumber }
+
+      if (window.confirm(`${personToAdd.name} is already added to phonebook, replace the old number with a new one?`)) {
+        phonebookService.update(updatedPerson.id, updatedPerson).then(response => {
+          setPersons(persons.map(personsObject => personsObject.id !== response.id ? personsObject : response))
+          setNewName('')
+          setNewNumber('')
+        });
+      }
     } else {
-      axios
-        .post("http://localhost:3001/persons", personObject)
+      const personObject = {
+        name: newName,
+        number: newNumber,
+      };
+      phonebookService.create(personObject)
         .then((response) => {
-          setPersons(persons.concat(response.data));
+          setPersons(persons.concat(response));
           setNewName("");
           setNewNumber("");
-        });
+          setNameFilter("");
+      });
     }
   };
 
@@ -67,7 +89,7 @@ const App = () => {
         newNumber={newNumber}
       />
       <h2>Numbers</h2>
-      <Persons peopleToShow={peopleToShow} />
+      <Persons peopleToShow={peopleToShow} deletePerson={deletePerson} />
     </div>
   );
 };
