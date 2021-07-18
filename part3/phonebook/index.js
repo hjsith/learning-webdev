@@ -4,7 +4,7 @@ const app = express();
 
 app.use(express.json());
 
-const phonebook = [
+let phonebook = [
   {
     id: 1,
     name: "Arto Hellas",
@@ -27,6 +27,12 @@ const phonebook = [
   },
 ];
 
+const generateId = () => {
+  const maxId =
+    phonebook.length > 0 ? Math.max(...phonebook.map((n) => n.id)) : 0;
+  return maxId + 1;
+};
+
 app.get("/api/persons", (request, response) => {
   response.json(phonebook);
 });
@@ -48,6 +54,26 @@ app.get("/api/persons/:id", (request, response) => {
   } else {
     response.status(404).end();
   }
+});
+
+app.post("/api/persons", (request, response) => {
+  const body = request.body;
+
+  if (!body.name) {
+    return response.status(400).json({
+      error: "content missing",
+    });
+  }
+
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: generateId(),
+  };
+
+  phonebook = phonebook.concat(person);
+
+  response.json(person);
 });
 
 app.delete("/api/persons/:id", (request, response) => {
